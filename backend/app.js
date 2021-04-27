@@ -8,6 +8,24 @@ import Pusher from 'pusher';
 const app = express();
 const port = process.env.PORT || 8000;
 
+const db = mongoose.connection;
+db.once('open', () => {
+  console.log('db connected');
+  const msgCollection = db.collection('messages');
+  const changeStream = msgCollection.watch();
+  changeStream.on('change', (change) => {
+    console.log(change);
+    if (change.operationType === 'insert') {
+      const messageDetails = change.fullDocument;
+      pusher.trigger('messages', 'inserted', {
+        name: messageDetails.name,
+      });
+    } else {
+      console.log('Error triggering pusher');
+    }
+  });
+});
+
 const pusher = new Pusher({
   appId: '1195334',
   key: '338b6a41b2c2a68d42df',
@@ -18,6 +36,12 @@ const pusher = new Pusher({
 
 // middlewares
 app.use(express.json());
+
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', '*');
+  next();
+});
 
 // db config
 const connection_url =
