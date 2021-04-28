@@ -2,6 +2,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import Messages from './messages.js';
+import Rooms from './rooms.js';
 import Pusher from 'pusher';
 import cors from 'cors';
 
@@ -73,6 +74,27 @@ app.post('/messages/new', (req, res) => {
       res.status(500).send(err);
     } else {
       res.status(201).send(`New message created ${data}`);
+    }
+  });
+});
+
+app.get('/rooms', (req, res) => {
+  Rooms.find((err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send(data);
+    }
+  });
+});
+
+app.post('/rooms/new', (req, res) => {
+  const room = req.body;
+  Rooms.create(room, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(201).send(`New room created ${data}`);
     }
   });
 });
