@@ -52,7 +52,6 @@ mongoose.connect(connection_url, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
 });
-// ?????
 
 // routes
 app.get('/', (req, res) => res.status(200).send('Hello World'));
@@ -67,25 +66,30 @@ app.get('/messages', (req, res) => {
   });
 });
 
-app.post('/messages/new', (req, res) => {
+app.post('/rooms/:id/messages/new', async (req, res) => {
+  const room = await Rooms.findById(req.params.id);
   const message = req.body;
   Messages.create(message, (err, data) => {
     if (err) {
       res.status(500).send(err);
     } else {
+      room.messages.push(data);
       res.status(201).send(`New message created ${data}`);
+      room.save();
     }
   });
 });
 
 app.get('/rooms', (req, res) => {
-  Rooms.find((err, data) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.status(200).send(data);
-    }
-  });
+  Rooms.find({})
+    .populate('messages')
+    .exec((err, data) => {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        res.status(200).send(data);
+      }
+    });
 });
 
 app.post('/rooms/new', (req, res) => {
