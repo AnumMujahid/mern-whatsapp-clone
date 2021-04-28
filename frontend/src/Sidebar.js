@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState} from 'react';
 import './Sidebar.css';
 import DonutLargeIcon from '@material-ui/icons/DonutLarge';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -8,6 +8,7 @@ import SearchOutlined from '@material-ui/icons/SearchOutlined';
 import SidebarChat from './SidebarChat';
 
 const Sidebar = () => {
+    const [room, setRoom] = useState([]);
   return (
     <div className="sidebar">
       <div className="sidebar__header">
@@ -31,7 +32,7 @@ const Sidebar = () => {
         </div>
       </div>
       <div className="sidebar__chats">
-        <SidebarChat />
+        <SidebarChat addNewChat />
         <SidebarChat />
         <SidebarChat />
       </div>
