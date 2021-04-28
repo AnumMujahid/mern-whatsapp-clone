@@ -6,9 +6,22 @@ import {
   InsertEmoticon,
   Mic,
 } from '@material-ui/icons';
-import React from 'react';
+import React, { useState } from 'react';
 import './Chat.css';
-const Chat = () => {
+import axios from './axios';
+
+const Chat = ({ messages }) => {
+  const [input, setInput] = useState('');
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    await axios.post('/messages/new', {
+      message: input,
+      name: 'Anum',
+      timestamp: 'Demo date',
+      received: true,
+    });
+    setInput('');
+  };
   return (
     <div className="chat">
       <div className="chat__header">
@@ -30,20 +43,29 @@ const Chat = () => {
         </div>
       </div>
       <div className="chat__body">
-        <p className="chat__message">
-          <span className="chat__name">Anum</span>This is a message
-          <span className="chat__timestamp">{new Date().toUTCString()}</span>
-        </p>
-        <p className="chat__message chat__receiver">
-          <span className="chat__name">Anum</span>This is a message
-          <span className="chat__timestamp">{new Date().toUTCString()}</span>
-        </p>
+        {messages.map((message) => (
+          <p
+            key={message._id}
+            className={`chat__message ${message.received && 'chat__receiver'}`}
+          >
+            <span className="chat__name">{message.name}</span>
+            {message.message}
+            <span className="chat__timestamp">{message.timestamp}</span>
+          </p>
+        ))}
       </div>
       <div className="chat__footer">
         <InsertEmoticon />
         <form>
-          <input type="text" placeholder="Type a message" />
-          <button type="submit">Send a Message</button>
+          <input
+            type="text"
+            placeholder="Type a message"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
+          <button onClick={sendMessage} type="submit">
+            Send a Message
+          </button>
         </form>
         <Mic />
       </div>

@@ -15,13 +15,12 @@ db.once('open', () => {
   const msgCollection = db.collection('messages');
   const changeStream = msgCollection.watch();
   changeStream.on('change', (change) => {
-    console.log(change);
     if (change.operationType === 'insert') {
       const messageDetails = change.fullDocument;
       pusher.trigger('messages', 'inserted', {
         name: messageDetails.name,
         message: messageDetails.message,
-        timestamp: messageDetails.timstamp,
+        timestamp: messageDetails.timestamp,
         received: messageDetails.received,
         _id: messageDetails._id,
         __v: messageDetails.__v,
