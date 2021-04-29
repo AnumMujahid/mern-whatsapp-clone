@@ -1,24 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import './Sidebar.css';
 import DonutLargeIcon from '@material-ui/icons/DonutLarge';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import ChatIcon from '@material-ui/icons/Chat';
 import { Avatar, IconButton } from '@material-ui/core';
 import SearchOutlined from '@material-ui/icons/SearchOutlined';
 import SidebarChat from './SidebarChat';
 import axios from './axios';
+import { useStateValue } from './StateProvider';
+import { auth } from './firebase';
+import { actionTypes } from './reducer';
 
 const Sidebar = () => {
   const [rooms, setRooms] = useState([]);
+  const [{user}, dispatch] = useStateValue();
+
   useEffect(() => {
     axios.get('/rooms').then((response) => {
       setRooms(response.data);
     });
   }, [rooms]);
+
+  const signout = () => {
+    auth.signOut();
+    dispatch({
+      type: actionTypes.SET_USER,
+      user: null,
+    });
+    localStorage.clear();
+  };
   return (
     <div className="sidebar">
       <div className="sidebar__header">
-        <Avatar src="https://avatars.githubusercontent.com/u/75484624?v=4" />
+        <Avatar src="https://avatars.dicebear.com/api/human/12345.svg" />
+        <h3>{user?.displayName}</h3>
         <div className="sidebar__headerRight">
           <IconButton>
             <DonutLargeIcon />
@@ -26,8 +41,8 @@ const Sidebar = () => {
           <IconButton>
             <ChatIcon />
           </IconButton>
-          <IconButton>
-            <MoreVertIcon />
+          <IconButton onClick={signout}>
+            <ExitToAppIcon />
           </IconButton>
         </div>
       </div>

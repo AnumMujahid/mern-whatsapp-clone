@@ -11,6 +11,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import './Chat.css';
 import axios from './axios';
+import { useStateValue } from './StateProvider';
 
 const Chat = () => {
   const [input, setInput] = useState('');
@@ -18,6 +19,7 @@ const Chat = () => {
   const [room, setRoom] = useState({});
   const [messages, setMessages] = useState([]);
   const { roomId } = useParams();
+  const [{ user }] = useStateValue();
 
   useEffect(() => {
     if (roomId) {
@@ -51,9 +53,7 @@ const Chat = () => {
     e.preventDefault();
     await axios.post(`/rooms/${roomId}/messages/new`, {
       message: input,
-      name: 'Anum',
-      timestamp: 'Demo date',
-      received: true,
+      name: user.displayName,
     });
     setInput('');
   };
@@ -63,7 +63,7 @@ const Chat = () => {
         <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
         <div className="chat__headerInfo">
           <h3>{room?.name}</h3>
-          <p>Last seen at ...</p>
+          <p>Last seen at {messages[messages.length - 1]?.timestamp}</p>
         </div>
         <div className="chat__headerRight">
           <IconButton>
@@ -81,7 +81,9 @@ const Chat = () => {
         {messages.map((message) => (
           <p
             key={message._id}
-            className={`chat__message ${message.received && 'chat__receiver'}`}
+            className={`chat__message ${
+              message.name === user.displayName && 'chat__receiver'
+            }`}
           >
             <span className="chat__name">{message.name}</span>
             {message.message}

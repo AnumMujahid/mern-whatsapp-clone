@@ -9,11 +9,16 @@
   background-color: #e6e6e6;
 }
 
-.sidebarChat__info{
-    margin-left: 15px;
+.sidebarChat__info {
+  margin-left: 15px;
 }
 
 .sidebarChat__info > h2 {
   font-size: 16px;
   margin-bottom: 8px;
+}
+
+a {
+  text-decoration: none !important;
+  color: black;
 }
