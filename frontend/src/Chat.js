@@ -1,4 +1,5 @@
 import { Avatar, IconButton } from '@material-ui/core';
+import Pusher from 'pusher-js';
 import {
   SearchOutlined,
   AttachFile,
@@ -7,20 +8,48 @@ import {
   Mic,
 } from '@material-ui/icons';
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import './Chat.css';
 import axios from './axios';
 
-const Chat = ({ messages }) => {
-    const [input, setInput] = useState('');
-    const [seed, setSeed] = useState('');
-    
-      useEffect(() => {
-        setSeed(Math.floor(Math.random() * 10000));
-      }, []);
-    
+const Chat = () => {
+  const [input, setInput] = useState('');
+  const [seed, setSeed] = useState('');
+  const [room, setRoom] = useState({});
+  const [messages, setMessages] = useState([]);
+  const { roomId } = useParams();
+
+  useEffect(() => {
+    if (roomId) {
+      axios.get(`/rooms/${roomId}`).then((response) => {
+        setRoom(response.data);
+        setMessages(response.data.messages);
+      });
+    }
+  }, [roomId]);
+
+  useEffect(() => {
+    setSeed(Math.floor(Math.random() * 10000));
+  }, [roomId]);
+
+  useEffect(() => {
+    const pusher = new Pusher('338b6a41b2c2a68d42df', {
+      cluster: 'ap2',
+    });
+
+    const channel = pusher.subscribe('messages');
+    channel.bind('inserted', (newMessage) => {
+      setMessages([...messages, newMessage]);
+    });
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, [messages]);
+
   const sendMessage = async (e) => {
     e.preventDefault();
-    await axios.post('/messages/new', {
+    await axios.post(`/rooms/${roomId}/messages/new`, {
       message: input,
       name: 'Anum',
       timestamp: 'Demo date',
@@ -33,7 +62,7 @@ const Chat = ({ messages }) => {
       <div className="chat__header">
         <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
         <div className="chat__headerInfo">
-          <h3>Room Name</h3>
+          <h3>{room?.name}</h3>
           <p>Last seen at ...</p>
         </div>
         <div className="chat__headerRight">

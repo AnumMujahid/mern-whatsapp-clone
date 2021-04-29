@@ -92,13 +92,25 @@ app.get('/rooms', (req, res) => {
     });
 });
 
+app.get('/rooms/:id', async (req, res) => {
+  Rooms.findById(req.params.id)
+    .populate('messages')
+    .exec((err, data) => {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        res.status(200).send(data);
+      }
+    });
+});
+
 app.post('/rooms/new', (req, res) => {
   const room = req.body;
   Rooms.create(room, (err, data) => {
     if (err) {
       res.status(500).send(err);
     } else {
-      res.status(201).send(`New room created ${data}`);
+      res.status(200).send(`New room created ${data}`);
     }
   });
 });
