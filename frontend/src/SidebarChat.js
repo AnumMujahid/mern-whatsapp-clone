@@ -28,7 +28,7 @@ const SidebarChat = ({ id, name, addNewChat }) => {
         setMessages(response.data.messages);
       });
     }
-  }, [id]);
+  }, [id, messages]);
 
   return !addNewChat ? (
     <Link to={`/rooms/${id}`}>
@@ -36,7 +36,7 @@ const SidebarChat = ({ id, name, addNewChat }) => {
         <Avatar src={`https://avatars.dicebear.com/api/human/${seed}.svg`} />
         <div className="sidebarChat__info">
           <h2>{name}</h2>
-          <p>{messages[messages.length -1]?.message}</p>
+          <p>{messages && messages[messages?.length - 1]?.message}</p>
         </div>
       </div>
     </Link>

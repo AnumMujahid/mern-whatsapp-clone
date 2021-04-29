@@ -10,10 +10,12 @@ import axios from './axios';
 import { useStateValue } from './StateProvider';
 import { auth } from './firebase';
 import { actionTypes } from './reducer';
+import { useHistory } from 'react-router-dom';
 
 const Sidebar = () => {
   const [rooms, setRooms] = useState([]);
-  const [{user}, dispatch] = useStateValue();
+  const [{ user }, dispatch] = useStateValue();
+  const history = useHistory();
 
   useEffect(() => {
     axios.get('/rooms').then((response) => {
@@ -28,6 +30,7 @@ const Sidebar = () => {
       user: null,
     });
     localStorage.clear();
+    history.push('/');
   };
   return (
     <div className="sidebar">
