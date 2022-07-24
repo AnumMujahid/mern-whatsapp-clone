@@ -31,10 +31,10 @@ db.once('open', () => {
 });
 
 const pusher = new Pusher({
-  appId: '1195334',
-  key: '338b6a41b2c2a68d42df',
-  secret: '2e3f49f6c8ccd78423de',
-  cluster: 'ap2',
+  appId: '', // pusher app id
+  key: '', // pusher key
+  secret: '', // pusher secret key
+  cluster: '', //pusher cluster number
   useTLS: true,
 });
 
@@ -43,8 +43,7 @@ app.use(express.json());
 app.use(cors());
 
 // db config
-const connection_url =
-  'mongodb+srv://admin:b2UbPCzkyUcb8Tc@cluster0.imiyf.mongodb.net/whastappclonedb?retryWrites=true&w=majority';
+const connection_url = ''; // mongodb-atlas url
 mongoose.connect(connection_url, {
   useCreateIndex: true,
   useUnifiedTopology: true,
